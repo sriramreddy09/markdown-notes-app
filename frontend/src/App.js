@@ -3,46 +3,55 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import './App.css';
 
+const API_URL = "https://notes-backend-n9g3.onrender.com";
+
 function App() {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState('');
-  
 
-  // Fetch notes
+  // ✅ Fetch notes
   const fetchNotes = useCallback(async () => {
-    const res = await axios.get('http://127.0.0.1:5000/notes');
-    setNotes(res.data);
+    try {
+      const res = await axios.get(`${API_URL}/notes`);
+      setNotes(res.data);
+    } catch (err) {
+      console.error("Error fetching notes", err);
+    }
   }, []);
 
   useEffect(() => {
     fetchNotes();
   }, [fetchNotes]);
 
-  // ✅ Auto-save (FIXED)
+  // ✅ Auto-save (debounced)
   const autoSaveNote = useCallback(async () => {
     if (!title && !content) return;
 
-    if (selectedId) {
-      await axios.put(`http://127.0.0.1:5000/notes/${selectedId}`, {
-        title,
-        content,
-      });
-    } else {
-      const res = await axios.post('http://127.0.0.1:5000/notes', {
-        title,
-        content,
-      });
+    try {
+      if (selectedId) {
+        await axios.put(`${API_URL}/notes/${selectedId}`, {
+          title,
+          content,
+        });
+      } else {
+        const res = await axios.post(`${API_URL}/notes`, {
+          title,
+          content,
+        });
 
-      setSelectedId(res.data.id); // important fix
+        setSelectedId(res.data.id);
+      }
+
+      fetchNotes();
+    } catch (err) {
+      console.error("Auto-save error", err);
     }
-
-    fetchNotes();
   }, [title, content, selectedId, fetchNotes]);
 
-  // ⏱️ Auto-save trigger (debounced style)
+  // ⏱️ Debounce auto-save
   useEffect(() => {
     if (!title && !content) return;
 
@@ -53,34 +62,44 @@ function App() {
     return () => clearTimeout(timer);
   }, [title, content, autoSaveNote]);
 
-  // Manual save (button)
+  // ✅ Manual save
   const saveNote = async () => {
     if (!title || !content) return;
 
-    if (selectedId) {
-      await axios.put(`http://127.0.0.1:5000/notes/${selectedId}`, {
-        title,
-        content,
-      });
-    } else {
-      const res = await axios.post('http://127.0.0.1:5000/notes', {
-        title,
-        content,
-      });
+    try {
+      if (selectedId) {
+        await axios.put(`${API_URL}/notes/${selectedId}`, {
+          title,
+          content,
+        });
+      } else {
+        const res = await axios.post(`${API_URL}/notes`, {
+          title,
+          content,
+        });
 
-      setSelectedId(res.data.id);
+        setSelectedId(res.data.id);
+      }
+
+      fetchNotes();
+    } catch (err) {
+      console.error("Save error", err);
     }
-
-    fetchNotes();
   };
 
-  // Delete note
+  // ✅ Delete note
   const deleteNote = async (id) => {
-    await axios.delete(`http://127.0.0.1:5000/notes/${id}`);
-    fetchNotes();
+    if (!window.confirm("Delete this note?")) return;
+
+    try {
+      await axios.delete(`${API_URL}/notes/${id}`);
+      fetchNotes();
+    } catch (err) {
+      console.error("Delete error", err);
+    }
   };
 
-  // Edit note
+  // ✅ Edit note
   const editNote = (note) => {
     setTitle(note.title);
     setContent(note.content);
@@ -105,12 +124,16 @@ function App() {
 
         {notes
           .filter(note =>
-            note.title.toLowerCase().includes(search.toLowerCase())
+            note.title.toLowerCase().includes(search.toLowerCase()) ||
+            note.content.toLowerCase().includes(search.toLowerCase())
           )
           .map(note => (
             <div key={note.id} className="note-item">
               <p onClick={() => editNote(note)}>{note.title}</p>
-              <button className="delete-btn" onClick={() => deleteNote(note.id)}>
+              <button
+                className="delete-btn"
+                onClick={() => deleteNote(note.id)}
+              >
                 Delete
               </button>
             </div>
