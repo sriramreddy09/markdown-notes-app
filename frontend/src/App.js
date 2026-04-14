@@ -18,7 +18,7 @@ function App() {
       const res = await axios.get(`${API_URL}/notes`);
       setNotes(res.data);
     } catch (err) {
-      console.error("Error fetching notes", err);
+      console.error(err);
     }
   }, []);
 
@@ -32,11 +32,13 @@ function App() {
 
     try {
       if (selectedId) {
+        // UPDATE
         await axios.put(`${API_URL}/notes/${selectedId}`, {
           title,
           content,
         });
       } else {
+        // CREATE NEW
         const res = await axios.post(`${API_URL}/notes`, {
           title,
           content,
@@ -47,7 +49,7 @@ function App() {
 
       fetchNotes();
     } catch (err) {
-      console.error("Auto-save error", err);
+      console.error(err);
     }
   }, [title, content, selectedId, fetchNotes]);
 
@@ -83,7 +85,7 @@ function App() {
 
       fetchNotes();
     } catch (err) {
-      console.error("Save error", err);
+      console.error(err);
     }
   };
 
@@ -94,8 +96,15 @@ function App() {
     try {
       await axios.delete(`${API_URL}/notes/${id}`);
       fetchNotes();
+
+      // clear editor if deleted note is selected
+      if (selectedId === id) {
+        setTitle('');
+        setContent('');
+        setSelectedId(null);
+      }
     } catch (err) {
-      console.error("Delete error", err);
+      console.error(err);
     }
   };
 
@@ -106,11 +115,23 @@ function App() {
     setSelectedId(note.id);
   };
 
+  // ✅ NEW NOTE FUNCTION (FIX)
+  const newNote = () => {
+    setTitle('');
+    setContent('');
+    setSelectedId(null);
+  };
+
   return (
     <div className="container">
 
       {/* Sidebar */}
       <div className="sidebar">
+
+        {/* NEW NOTE BUTTON */}
+        <button className="save-btn" onClick={newNote}>
+          + New Note
+        </button>
 
         {/* Search */}
         <input
