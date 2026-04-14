@@ -6,10 +6,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Initialize DB
+// Initialize DB
 const db = new Database('notes.db');
 
-// ✅ Create table
+// Create table
 db.prepare(`
   CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,7 +18,7 @@ db.prepare(`
   )
 `).run();
 
-// ✅ GET all notes
+// GET all notes
 app.get('/notes', (req, res) => {
   try {
     const rows = db.prepare("SELECT * FROM notes").all();
@@ -28,7 +28,7 @@ app.get('/notes', (req, res) => {
   }
 });
 
-// ✅ CREATE note
+//  CREATE note
 app.post('/notes', (req, res) => {
   try {
     const { title, content } = req.body;
@@ -43,7 +43,7 @@ app.post('/notes', (req, res) => {
   }
 });
 
-// ✅ UPDATE note
+// UPDATE note
 app.put('/notes/:id', (req, res) => {
   try {
     const { title, content } = req.body;
@@ -58,7 +58,7 @@ app.put('/notes/:id', (req, res) => {
   }
 });
 
-// ✅ DELETE note
+// DELETE note
 app.delete('/notes/:id', (req, res) => {
   try {
     db.prepare("DELETE FROM notes WHERE id=?").run(req.params.id);
@@ -68,11 +68,11 @@ app.delete('/notes/:id', (req, res) => {
   }
 });
 
-// ✅ Root route (optional but useful)
+// Root route (optional but useful)
 app.get('/', (req, res) => {
   res.send("API is running 🚀");
 });
 
-// ✅ Port fix for Render
+// Port fix for Render
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
