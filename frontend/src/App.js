@@ -12,7 +12,7 @@ function App() {
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState('');
 
-  // ✅ Fetch notes
+  // Fetch notes
   const fetchNotes = useCallback(async () => {
     try {
       const res = await axios.get(`${API_URL}/notes`);
@@ -26,7 +26,7 @@ function App() {
     fetchNotes();
   }, [fetchNotes]);
 
-  // ✅ Auto-save (debounced)
+  // Auto-save (debounced)
   const autoSaveNote = useCallback(async () => {
     if (!title && !content) return;
 
@@ -53,7 +53,7 @@ function App() {
     }
   }, [title, content, selectedId, fetchNotes]);
 
-  // ⏱️ Debounce auto-save
+  // Debounce auto-save
   useEffect(() => {
     if (!title && !content) return;
 
@@ -64,7 +64,7 @@ function App() {
     return () => clearTimeout(timer);
   }, [title, content, autoSaveNote]);
 
-  // ✅ Manual save
+  // Manual save
   const saveNote = async () => {
     if (!title || !content) return;
 
@@ -89,7 +89,7 @@ function App() {
     }
   };
 
-  // ✅ Delete note
+  // Delete note
   const deleteNote = async (id) => {
     if (!window.confirm("Delete this note?")) return;
 
@@ -108,14 +108,14 @@ function App() {
     }
   };
 
-  // ✅ Edit note
+  // Edit note
   const editNote = (note) => {
     setTitle(note.title);
     setContent(note.content);
     setSelectedId(note.id);
   };
 
-  // ✅ NEW NOTE FUNCTION (FIX)
+  // NEW NOTE FUNCTION (FIX)
   const newNote = () => {
     setTitle('');
     setContent('');
