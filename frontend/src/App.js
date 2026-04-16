@@ -12,7 +12,6 @@ function App() {
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState('');
 
-  // Fetch notes
   const fetchNotes = async () => {
     const res = await axios.get(`${API_URL}/notes`);
     setNotes(res.data.reverse());
@@ -22,31 +21,21 @@ function App() {
     fetchNotes();
   }, []);
 
-  // Save (Create or Update)
   const saveNote = async () => {
     if (!title.trim()) return;
 
     if (selectedId) {
-      await axios.put(`${API_URL}/notes/${selectedId}`, {
-        title,
-        content,
-      });
+      await axios.put(`${API_URL}/notes/${selectedId}`, { title, content });
     } else {
-      await axios.post(`${API_URL}/notes`, {
-        title,
-        content,
-      });
+      await axios.post(`${API_URL}/notes`, { title, content });
     }
 
-    // reset after save
     setTitle('');
     setContent('');
     setSelectedId(null);
-
     fetchNotes();
   };
 
-  // Delete
   const deleteNote = async (id) => {
     if (!window.confirm("Delete this note?")) return;
 
@@ -61,14 +50,12 @@ function App() {
     fetchNotes();
   };
 
-  // Edit
   const editNote = (note) => {
     setTitle(note.title);
     setContent(note.content);
     setSelectedId(note.id);
   };
 
-  // New Note
   const newNote = () => {
     setTitle('');
     setContent('');
@@ -80,54 +67,59 @@ function App() {
 
       {/* Sidebar */}
       <div className="sidebar">
+        <h2>📝 Notes</h2>
+
         <button className="new-btn" onClick={newNote}>
           + New Note
         </button>
 
         <input
           className="search"
-          placeholder="Search..."
+          placeholder="Search notes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <h3>Notes</h3>
-
-        {notes
-          .filter(note =>
-            note.title.toLowerCase().includes(search.toLowerCase()) ||
-            note.content.toLowerCase().includes(search.toLowerCase())
-          )
-          .map(note => (
-            <div
-              key={note.id}
-              className={`note-item ${selectedId === note.id ? "active" : ""}`}
-              onClick={() => editNote(note)}
-            >
-              <p>{note.title || "Untitled"}</p>
-              <button
-                className="delete-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteNote(note.id);
-                }}
+        <div className="notes-list">
+          {notes
+            .filter(note =>
+              note.title.toLowerCase().includes(search.toLowerCase()) ||
+              note.content.toLowerCase().includes(search.toLowerCase())
+            )
+            .map(note => (
+              <div
+                key={note.id}
+                className={`note-card ${selectedId === note.id ? "active" : ""}`}
+                onClick={() => editNote(note)}
               >
-                Delete
-              </button>
-            </div>
-          ))}
+                <h4>{note.title || "Untitled"}</h4>
+                <p>{note.content.substring(0, 60)}...</p>
+
+                <button
+                  className="delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteNote(note.id);
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+        </div>
       </div>
 
       {/* Editor */}
       <div className="editor">
         <input
-          placeholder="Title"
+          className="title-input"
+          placeholder="Enter title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <textarea
-          rows="20"
+          className="content-input"
           placeholder="Write your note..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
