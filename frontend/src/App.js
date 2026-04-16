@@ -11,6 +11,7 @@ function App() {
   const [content, setContent] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState('');
+  const [showGuide, setShowGuide] = useState(false);
 
   const fetchNotes = async () => {
     const res = await axios.get(`${API_URL}/notes`);
@@ -75,7 +76,7 @@ function App() {
 
         <input
           className="search"
-          placeholder="Search notes..."
+          placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -113,7 +114,7 @@ function App() {
       <div className="editor">
         <input
           className="title-input"
-          placeholder="Enter title..."
+          placeholder="Title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -134,19 +135,31 @@ function App() {
       <div className="preview">
         <h3>Preview</h3>
         <ReactMarkdown>{content}</ReactMarkdown>
-         <div className="markdown-help">
-    <h4>Markdown Guide</h4>
-    <ul>
-      <li><b># Heading</b></li>
-      <li><b>## Subheading</b></li>
-      <li><b>**Bold Text**</b></li>
-      <li><b>*Italic Text*</b></li>
-      <li><b>- List Item</b></li>
-      <li><b>`Code`</b></li>
-      <li><b>[Link](url)</b></li>
-    </ul>
-  </div>
       </div>
+
+      {/* Floating Help Button */}
+      <button 
+        className="help-btn"
+        onClick={() => setShowGuide(!showGuide)}
+      >
+        ?
+      </button>
+
+      {/* Floating Markdown Guide */}
+      {showGuide && (
+        <div className="help-panel">
+          <h4>Markdown Guide</h4>
+          <ul>
+            <li><b># Heading</b></li>
+            <li><b>## Subheading</b></li>
+            <li><b>**Bold**</b></li>
+            <li><b>*Italic*</b></li>
+            <li><b>- List</b></li>
+            <li><b>`Code`</b></li>
+            <li><b>[Link](url)</b></li>
+          </ul>
+        </div>
+      )}
 
     </div>
   );

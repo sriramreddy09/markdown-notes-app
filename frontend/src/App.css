@@ -17,10 +17,6 @@ body {
   border-right: 1px solid #ddd;
 }
 
-.sidebar h2 {
-  margin-top: 0;
-}
-
 .new-btn {
   width: 100%;
   padding: 10px;
@@ -53,27 +49,12 @@ body {
   margin-bottom: 10px;
   cursor: pointer;
   position: relative;
-  transition: 0.2s;
-}
-
-.note-card:hover {
-  transform: translateY(-2px);
 }
 
 .note-card.active {
   border-left: 5px solid #00a8ff;
 }
 
-.note-card h4 {
-  margin: 0;
-}
-
-.note-card p {
-  font-size: 12px;
-  color: #555;
-}
-
-/* Delete */
 .delete-btn {
   position: absolute;
   top: 8px;
@@ -98,7 +79,6 @@ body {
 .title-input {
   width: 100%;
   padding: 12px;
-  font-size: 18px;
   margin-bottom: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -110,18 +90,16 @@ body {
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  resize: none;
 }
 
 .save-btn {
   margin-top: 10px;
-  padding: 10px;
   width: 100%;
+  padding: 10px;
   background: #273c75;
   color: white;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
 }
 
 /* Preview */
@@ -130,6 +108,33 @@ body {
   padding: 20px;
   background: #fafafa;
   overflow-y: auto;
+}
+
+/* Floating Help Button */
+.help-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #00a8ff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Help Panel */
+.help-panel {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  width: 220px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 /* Responsive */
@@ -143,25 +148,4 @@ body {
   .preview {
     width: 100%;
   }
-}
-
-.markdown-help {
-  margin-top: 20px;
-  padding: 15px;
-  background: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-
-.markdown-help h4 {
-  margin-top: 0;
-}
-
-.markdown-help ul {
-  padding-left: 18px;
-}
-
-.markdown-help li {
-  font-size: 13px;
-  margin-bottom: 5px;
 }
