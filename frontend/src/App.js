@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import './App.css';
@@ -11,87 +11,68 @@ function App() {
   const [content, setContent] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState('');
-  const [saving, setSaving] = useState(false);
 
-  // ✅ Fetch notes
-  const fetchNotes = useCallback(async () => {
-    try {
-      const res = await axios.get(`${API_URL}/notes`);
-      setNotes(res.data.reverse()); // latest first
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
+  // Fetch notes
+  const fetchNotes = async () => {
+    const res = await axios.get(`${API_URL}/notes`);
+    setNotes(res.data.reverse());
+  };
 
   useEffect(() => {
     fetchNotes();
-  }, [fetchNotes]);
+  }, []);
 
-  // ✅ Auto-save
-  const autoSaveNote = useCallback(async () => {
-    if (!title.trim() && !content.trim()) return;
+  // Save (Create or Update)
+  const saveNote = async () => {
+    if (!title.trim()) return;
 
-    try {
-      setSaving(true);
-
-      if (selectedId) {
-        await axios.put(`${API_URL}/notes/${selectedId}`, {
-          title,
-          content,
-        });
-      } else {
-        const res = await axios.post(`${API_URL}/notes`, {
-          title,
-          content,
-        });
-        setSelectedId(res.data.id);
-      }
-
-      fetchNotes();
-      setSaving(false);
-    } catch (err) {
-      console.error(err);
-      setSaving(false);
+    if (selectedId) {
+      await axios.put(`${API_URL}/notes/${selectedId}`, {
+        title,
+        content,
+      });
+    } else {
+      await axios.post(`${API_URL}/notes`, {
+        title,
+        content,
+      });
     }
-  }, [title, content, selectedId, fetchNotes]);
 
-  // ⏱️ Debounce
-  useEffect(() => {
-    if (!title && !content) return;
-
-    const timer = setTimeout(() => {
-      autoSaveNote();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [title, content, autoSaveNote]);
-
-  // ✅ New Note
-  const newNote = () => {
+    // reset after save
     setTitle('');
     setContent('');
     setSelectedId(null);
+
+    fetchNotes();
   };
 
-  // ✅ Delete
+  // Delete
   const deleteNote = async (id) => {
     if (!window.confirm("Delete this note?")) return;
 
-    try {
-      await axios.delete(`${API_URL}/notes/${id}`);
-      fetchNotes();
+    await axios.delete(`${API_URL}/notes/${id}`);
 
-      if (selectedId === id) newNote();
-    } catch (err) {
-      console.error(err);
+    if (selectedId === id) {
+      setTitle('');
+      setContent('');
+      setSelectedId(null);
     }
+
+    fetchNotes();
   };
 
-  // ✅ Edit
+  // Edit
   const editNote = (note) => {
     setTitle(note.title);
     setContent(note.content);
     setSelectedId(note.id);
+  };
+
+  // New Note
+  const newNote = () => {
+    setTitle('');
+    setContent('');
+    setSelectedId(null);
   };
 
   return (
@@ -112,8 +93,6 @@ function App() {
 
         <h3>Notes</h3>
 
-        {notes.length === 0 && <p>No notes yet</p>}
-
         {notes
           .filter(note =>
             note.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -125,7 +104,7 @@ function App() {
               className={`note-item ${selectedId === note.id ? "active" : ""}`}
               onClick={() => editNote(note)}
             >
-              {note.title || "Untitled"}
+              <p>{note.title || "Untitled"}</p>
               <button
                 className="delete-btn"
                 onClick={(e) => {
@@ -149,11 +128,14 @@ function App() {
 
         <textarea
           rows="20"
+          placeholder="Write your note..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
 
-        <p className="status">{saving ? "Saving..." : "Saved"}</p>
+        <button className="save-btn" onClick={saveNote}>
+          {selectedId ? "Update Note" : "Save Note"}
+        </button>
       </div>
 
       {/* Preview */}

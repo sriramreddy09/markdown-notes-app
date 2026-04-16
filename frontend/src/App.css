@@ -1,41 +1,40 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f5f6fa;
+  background: #f5f6fa;
 }
 
 .container {
   display: flex;
   height: 100vh;
-  gap: 10px;
 }
 
 /* Sidebar */
 .sidebar {
-  width: 22%;
+  width: 25%;
   background: #2f3640;
   color: white;
   padding: 15px;
-  display: flex;
-  flex-direction: column;
   overflow-y: auto;
 }
 
 .new-btn {
-  background: #44bd32;
-  color: white;
-  border: none;
+  width: 100%;
   padding: 10px;
-  margin-bottom: 10px;
+  background: #44bd32;
+  border: none;
+  color: white;
   border-radius: 6px;
+  margin-bottom: 10px;
   cursor: pointer;
 }
 
 .search {
+  width: 100%;
   padding: 10px;
-  margin-bottom: 10px;
   border-radius: 6px;
   border: none;
+  margin-bottom: 10px;
 }
 
 .note-item {
@@ -53,17 +52,16 @@ body {
 .delete-btn {
   margin-top: 5px;
   background: red;
-  color: white;
   border: none;
-  padding: 4px;
-  font-size: 12px;
+  color: white;
+  padding: 5px;
   border-radius: 4px;
   cursor: pointer;
 }
 
 /* Editor */
 .editor {
-  width: 38%;
+  width: 35%;
   padding: 20px;
   background: #f9f9f9;
 }
@@ -75,9 +73,14 @@ body {
   margin-bottom: 10px;
 }
 
-.status {
-  font-size: 12px;
-  color: gray;
+/* Save button */
+.save-btn {
+  background: #273c75;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 /* Preview */
@@ -86,4 +89,17 @@ body {
   padding: 20px;
   background: white;
   overflow-y: auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar,
+  .editor,
+  .preview {
+    width: 100%;
+  }
 }
