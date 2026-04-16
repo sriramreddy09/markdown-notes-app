@@ -134,6 +134,18 @@ function App() {
       <div className="preview">
         <h3>Preview</h3>
         <ReactMarkdown>{content}</ReactMarkdown>
+         <div className="markdown-help">
+    <h4>Markdown Guide</h4>
+    <ul>
+      <li><b># Heading</b></li>
+      <li><b>## Subheading</b></li>
+      <li><b>**Bold Text**</b></li>
+      <li><b>*Italic Text*</b></li>
+      <li><b>- List Item</b></li>
+      <li><b>`Code`</b></li>
+      <li><b>[Link](url)</b></li>
+    </ul>
+  </div>
       </div>
 
     </div>
