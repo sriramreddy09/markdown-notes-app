@@ -11,12 +11,13 @@ function App() {
   const [content, setContent] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   const [search, setSearch] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  // Fetch notes
+  // ✅ Fetch notes
   const fetchNotes = useCallback(async () => {
     try {
       const res = await axios.get(`${API_URL}/notes`);
-      setNotes(res.data);
+      setNotes(res.data.reverse()); // latest first
     } catch (err) {
       console.error(err);
     }
@@ -26,34 +27,35 @@ function App() {
     fetchNotes();
   }, [fetchNotes]);
 
-  // Auto-save (debounced)
+  // ✅ Auto-save
   const autoSaveNote = useCallback(async () => {
-    if (!title && !content) return;
+    if (!title.trim() && !content.trim()) return;
 
     try {
+      setSaving(true);
+
       if (selectedId) {
-        // UPDATE
         await axios.put(`${API_URL}/notes/${selectedId}`, {
           title,
           content,
         });
       } else {
-        // CREATE NEW
         const res = await axios.post(`${API_URL}/notes`, {
           title,
           content,
         });
-
         setSelectedId(res.data.id);
       }
 
       fetchNotes();
+      setSaving(false);
     } catch (err) {
       console.error(err);
+      setSaving(false);
     }
   }, [title, content, selectedId, fetchNotes]);
 
-  // Debounce auto-save
+  // ⏱️ Debounce
   useEffect(() => {
     if (!title && !content) return;
 
@@ -64,32 +66,14 @@ function App() {
     return () => clearTimeout(timer);
   }, [title, content, autoSaveNote]);
 
-  // Manual save
-  const saveNote = async () => {
-    if (!title || !content) return;
-
-    try {
-      if (selectedId) {
-        await axios.put(`${API_URL}/notes/${selectedId}`, {
-          title,
-          content,
-        });
-      } else {
-        const res = await axios.post(`${API_URL}/notes`, {
-          title,
-          content,
-        });
-
-        setSelectedId(res.data.id);
-      }
-
-      fetchNotes();
-    } catch (err) {
-      console.error(err);
-    }
+  // ✅ New Note
+  const newNote = () => {
+    setTitle('');
+    setContent('');
+    setSelectedId(null);
   };
 
-  // Delete note
+  // ✅ Delete
   const deleteNote = async (id) => {
     if (!window.confirm("Delete this note?")) return;
 
@@ -97,29 +81,17 @@ function App() {
       await axios.delete(`${API_URL}/notes/${id}`);
       fetchNotes();
 
-      // clear editor if deleted note is selected
-      if (selectedId === id) {
-        setTitle('');
-        setContent('');
-        setSelectedId(null);
-      }
+      if (selectedId === id) newNote();
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Edit note
+  // ✅ Edit
   const editNote = (note) => {
     setTitle(note.title);
     setContent(note.content);
     setSelectedId(note.id);
-  };
-
-  // NEW NOTE FUNCTION (FIX)
-  const newNote = () => {
-    setTitle('');
-    setContent('');
-    setSelectedId(null);
   };
 
   return (
@@ -127,13 +99,10 @@ function App() {
 
       {/* Sidebar */}
       <div className="sidebar">
-
-        {/* NEW NOTE BUTTON */}
-        <button className="save-btn" onClick={newNote}>
+        <button className="new-btn" onClick={newNote}>
           + New Note
         </button>
 
-        {/* Search */}
         <input
           className="search"
           placeholder="Search..."
@@ -143,17 +112,26 @@ function App() {
 
         <h3>Notes</h3>
 
+        {notes.length === 0 && <p>No notes yet</p>}
+
         {notes
           .filter(note =>
             note.title.toLowerCase().includes(search.toLowerCase()) ||
             note.content.toLowerCase().includes(search.toLowerCase())
           )
           .map(note => (
-            <div key={note.id} className="note-item">
-              <p onClick={() => editNote(note)}>{note.title}</p>
+            <div
+              key={note.id}
+              className={`note-item ${selectedId === note.id ? "active" : ""}`}
+              onClick={() => editNote(note)}
+            >
+              {note.title || "Untitled"}
               <button
                 className="delete-btn"
-                onClick={() => deleteNote(note.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteNote(note.id);
+                }}
               >
                 Delete
               </button>
@@ -175,9 +153,7 @@ function App() {
           onChange={(e) => setContent(e.target.value)}
         />
 
-        <button className="save-btn" onClick={saveNote}>
-          Save
-        </button>
+        <p className="status">{saving ? "Saving..." : "Saved"}</p>
       </div>
 
       {/* Preview */}

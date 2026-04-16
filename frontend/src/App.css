@@ -4,110 +4,86 @@ body {
   background-color: #f5f6fa;
 }
 
-/* Layout */
 .container {
   display: flex;
   height: 100vh;
+  gap: 10px;
 }
 
 /* Sidebar */
 .sidebar {
-  width: 20%;
+  width: 22%;
   background: #2f3640;
   color: white;
   padding: 15px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
-.sidebar h3 {
-  margin-bottom: 10px;
-}
-
-/* SEARCH BOX FIX */
-.sidebar input {
+.new-btn {
+  background: #44bd32;
+  color: white;
+  border: none;
   padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search {
+  padding: 10px;
+  margin-bottom: 10px;
   border-radius: 6px;
   border: none;
-  margin-bottom: 15px;
-  outline: none;
-  font-size: 14px;
-  background: #f1f2f6;
-  color: #2f3640;
-  transition: 0.2s;
 }
 
-.sidebar input:focus {
-  background: white;
-  box-shadow: 0 0 5px rgba(64, 115, 158, 0.6);
-}
-
-/* Notes */
 .note-item {
   background: #353b48;
   padding: 10px;
   margin-bottom: 8px;
-  cursor: pointer;
   border-radius: 6px;
-  transition: 0.2s;
+  cursor: pointer;
 }
 
-.note-item:hover {
-  background: #40739e;
+.note-item.active {
+  background: #00a8ff;
 }
 
-/* Delete button */
 .delete-btn {
   margin-top: 5px;
-  background: #e84118;
+  background: red;
   color: white;
   border: none;
-  padding: 5px 8px;
-  cursor: pointer;
-  border-radius: 4px;
+  padding: 4px;
   font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 /* Editor */
 .editor {
-  width: 40%;
-  padding: 15px;
+  width: 38%;
+  padding: 20px;
+  background: #f9f9f9;
 }
 
 .editor input,
 .editor textarea {
   width: 100%;
-  margin-bottom: 10px;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  outline: none;
+  margin-bottom: 10px;
 }
 
-.editor input:focus,
-.editor textarea:focus {
-  border-color: #40739e;
-  box-shadow: 0 0 4px rgba(64, 115, 158, 0.4);
-}
-
-/* Save button */
-.save-btn {
-  background: #44bd32;
-  color: white;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.status {
+  font-size: 12px;
+  color: gray;
 }
 
 /* Preview */
 .preview {
   width: 40%;
-  padding: 15px;
+  padding: 20px;
   background: white;
-  border-left: 1px solid #ddd;
-}
-
-.preview h3 {
-  margin-top: 0;
+  overflow-y: auto;
 }
